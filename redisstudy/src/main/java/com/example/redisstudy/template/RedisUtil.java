@@ -746,18 +746,6 @@ public final class RedisUtil {
     }
 
     /**
-     * 查询集合中指定顺序的值和score，0, -1 表示获取全部的集合内容
-     *
-     * @param key
-     * @param start
-     * @param end
-     * @return
-     */
-    public Set<ZSetOperations.TypedTuple<Object>> zrangeWithScore(String key, int start, int end) {
-        return redisTemplate.opsForZSet().rangeWithScores(key, start, end);
-    }
-
-    /**
      * 查询集合中指定顺序的值  zrevrange
      *
      * 返回有序的集合中，score大的在前面
@@ -770,6 +758,19 @@ public final class RedisUtil {
     public Set<Object> zrevRange(String key, int start, int end) {
         return redisTemplate.opsForZSet().reverseRange(key, start, end);
     }
+
+    /**
+     * 查询集合中指定顺序的值和score，0, -1 表示获取全部的集合内容
+     *
+     * @param key
+     * @param start
+     * @param end
+     * @return
+     */
+    public Set<ZSetOperations.TypedTuple<Object>> zrangeWithScore(String key, int start, int end) {
+        return redisTemplate.opsForZSet().rangeWithScores(key, start, end);
+    }
+
 
     /**
      * 根据score的值，来获取满足条件的集合  zrangebyscore

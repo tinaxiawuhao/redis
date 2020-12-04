@@ -15,9 +15,17 @@ public class RedisTestController {
     @Autowired
     private RedisTestService redisTestService;
 
-    @GetMapping("/test")
-    public void test() {
-         redisTestService.test();
+    @GetMapping("/vote")
+    public void vote() {
+         redisTestService.vote();
+    }
+    @GetMapping("/publish")
+    public void publish() {
+         redisTestService.publish();
+    }
+    @GetMapping("/sort")
+    public void sort() {
+         redisTestService.sort();
     }
 
 }
