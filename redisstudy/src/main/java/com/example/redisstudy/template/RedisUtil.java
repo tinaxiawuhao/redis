@@ -790,10 +790,10 @@ public final class RedisUtil {
     //=====================pipeline===================
 
     /**
-     * pipeline管道批量处理
+     * pipeline管道批量获取数据
      * @param keyList
      */
-    public void pipeline(List<String> keyList) {
+    public List<Object> batchGet(List<String> keyList) {
         List<Object> List = redisTemplate.executePipelined(new RedisCallback<String>() {
             @Nullable
             @Override
@@ -805,16 +805,16 @@ public final class RedisUtil {
                 return null;
             }
         }, redisTemplate.getValueSerializer());
+        return List;
     }
 
     /**
-     *
+     * 批量插入数据
      * @param saveList
      * @param unit
      * @param timeout
      */
     public void batchInsert(List<Map<String, String>> saveList, TimeUnit unit, int timeout) {
-        /* 插入多条数据 */
         redisTemplate.executePipelined(new SessionCallback<Object>() {
             @Override
             public <K, V> Object execute(RedisOperations<K, V> redisOperations) throws DataAccessException {
@@ -823,7 +823,7 @@ public final class RedisUtil {
                 }
                 return null;
             }
-        });
+        },redisTemplate.getValueSerializer());
     }
 
 

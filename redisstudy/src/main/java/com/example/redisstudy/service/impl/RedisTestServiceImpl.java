@@ -1,14 +1,12 @@
 package com.example.redisstudy.service.impl;
 
-import com.example.redisstudy.service.RedisTestService;
 import com.example.redisstudy.template.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author wuhao
@@ -17,7 +15,7 @@ import java.util.Set;
  */
 @Service
 @Slf4j
-public class RedisTestServiceImpl implements RedisTestService {
+public class RedisTestServiceImpl {
     @Autowired
     private RedisUtil redisUtil;
 
@@ -40,7 +38,7 @@ public class RedisTestServiceImpl implements RedisTestService {
     private Integer SCORE = 432;
     private Integer PAGE_NUMBER = 10;
 
-    @Override
+
     public void vote() {
         String userId = "user:12345";
         String article = "article:12345";
@@ -59,7 +57,6 @@ public class RedisTestServiceImpl implements RedisTestService {
     /**
      * 发布并获取文章
      */
-    @Override
     public void publish() {
         String userId = "user:23465";
         String article = "article:23456";
@@ -78,7 +75,6 @@ public class RedisTestServiceImpl implements RedisTestService {
     /**
      * 获取最新和评分最高的文章
      */
-    @Override
     public void sort() {
         int start = 0 * PAGE_NUMBER;
         int end = 1 * PAGE_NUMBER;
@@ -92,5 +88,23 @@ public class RedisTestServiceImpl implements RedisTestService {
     /**
      * pipeline
      */
+    public void pipelineTest() {
+        List keyList = new ArrayList();
+        for (int i = 0; i < 1000; i++) {
+            keyList.add("pipeTestKey" + i);
+        }
+        List result = redisUtil.batchGet(keyList);
+        System.out.println(result);
+        List<Map<String, String>> list = new ArrayList<>();
+        for (int i = 0; i < 1000; i++) {
+            Map<String, String> map = new HashMap<>();
+            map.put("key", "pipeTestKey" + i);
+            map.put("value", "value" + i);
+            list.add(map);
+        }
+        redisUtil.batchInsert(list, TimeUnit.SECONDS, 300);
+        List result_two = redisUtil.batchGet(keyList);
+        System.out.println(result_two);
+    }
 
 }

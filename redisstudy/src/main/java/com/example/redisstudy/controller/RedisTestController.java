@@ -1,6 +1,6 @@
 package com.example.redisstudy.controller;
 
-import com.example.redisstudy.service.RedisTestService;
+import com.example.redisstudy.service.impl.RedisTestServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,8 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class RedisTestController {
+    /*SpringBoot默认的AOP实现就是使用的CGLib代理*/
     @Autowired
-    private RedisTestService redisTestService;
+    private RedisTestServiceImpl redisTestService;
 
     @GetMapping("/vote")
     public void vote() {
@@ -23,9 +24,15 @@ public class RedisTestController {
     public void publish() {
          redisTestService.publish();
     }
+
     @GetMapping("/sort")
     public void sort() {
          redisTestService.sort();
+    }
+
+    @GetMapping("/pipelineTest")
+    public void pipelineTest() {
+         redisTestService.pipelineTest();
     }
 
 }

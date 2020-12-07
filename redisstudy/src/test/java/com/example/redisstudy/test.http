@@ -9,3 +9,8 @@ GET http://localhost:8088/publish
 #查看排序数据
 GET http://localhost:8088/sort
 ###
+
+
+#批量处理
+GET http://localhost:8088/pipelineTest
+###
