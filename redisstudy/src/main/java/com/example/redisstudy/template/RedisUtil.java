@@ -1,8 +1,10 @@
 package com.example.redisstudy.template;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.*;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -783,5 +785,46 @@ public final class RedisUtil {
     public Set<Object> zsortRange(String key, int min, int max) {
         return redisTemplate.opsForZSet().rangeByScore(key, min, max);
     }
+
+
+    //=====================pipeline===================
+
+    /**
+     * pipeline管道批量处理
+     * @param keyList
+     */
+    public void pipeline(List<String> keyList) {
+        List<Object> List = redisTemplate.executePipelined(new RedisCallback<String>() {
+            @Nullable
+            @Override
+            public String doInRedis(RedisConnection connection) throws DataAccessException {
+                connection.openPipeline();
+                for (String param:keyList) {
+                    connection.get(param.getBytes());
+                }
+                return null;
+            }
+        }, redisTemplate.getValueSerializer());
+    }
+
+    /**
+     *
+     * @param saveList
+     * @param unit
+     * @param timeout
+     */
+    public void batchInsert(List<Map<String, String>> saveList, TimeUnit unit, int timeout) {
+        /* 插入多条数据 */
+        redisTemplate.executePipelined(new SessionCallback<Object>() {
+            @Override
+            public <K, V> Object execute(RedisOperations<K, V> redisOperations) throws DataAccessException {
+                for (Map<String, String> needSave : saveList) {
+                    redisTemplate.opsForValue().set(needSave.get("key"), needSave.get("value"), timeout,unit);
+                }
+                return null;
+            }
+        });
+    }
+
 
 }

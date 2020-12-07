@@ -87,4 +87,10 @@ public class RedisTestServiceImpl implements RedisTestService {
         Set<Object> score = redisUtil.zrevRange("score", start, end);
         System.out.println(score);
     }
+
+
+    /**
+     * pipeline
+     */
+
 }
