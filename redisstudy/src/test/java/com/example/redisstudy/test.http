@@ -14,3 +14,11 @@ GET http://localhost:8088/sort
 #批量处理
 GET http://localhost:8088/pipelineTest
 ###
+
+#事务测试
+GET http://localhost:8088/transactionalTest
+###
+
+#事务测试
+GET http://localhost:8088/transactionalTest2
+###

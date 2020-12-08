@@ -24,6 +24,28 @@ public final class RedisUtil {
     // =============================common============================
 
     /**
+     * 简单事务支持
+     */
+    public void setEnableTransactionSupport() {
+        // 开启事务支持，在同一个 Connection 中执行命令
+        redisTemplate.setEnableTransactionSupport(true);
+    }
+
+    /**
+     * 简单事务开启
+     */
+    public void multi() {
+        redisTemplate.multi();
+    }
+
+
+    /**
+     * 简单事务执行
+     */
+    public void exec() {
+        redisTemplate.exec();
+    }
+    /**
      * 指定缓存失效时间
      *
      * @param key  键
@@ -825,6 +847,5 @@ public final class RedisUtil {
             }
         },redisTemplate.getValueSerializer());
     }
-
 
 }

@@ -35,4 +35,14 @@ public class RedisTestController {
          redisTestService.pipelineTest();
     }
 
+    @GetMapping("/transactionalTest")
+    public void transactionalTest() {
+         redisTestService.transactionalTest();
+    }
+
+    @GetMapping("/transactionalTest2")
+    public void transactionalTest2() {
+        redisTestService.transactionalTest2();
+    }
+
 }

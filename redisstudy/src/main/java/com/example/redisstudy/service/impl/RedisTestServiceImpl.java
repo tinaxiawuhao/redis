@@ -3,6 +3,10 @@ package com.example.redisstudy.service.impl;
 import com.example.redisstudy.template.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -18,6 +22,9 @@ import java.util.concurrent.TimeUnit;
 public class RedisTestServiceImpl {
     @Autowired
     private RedisUtil redisUtil;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     /**
      * 对文章进行投票
@@ -105,6 +112,54 @@ public class RedisTestServiceImpl {
         redisUtil.batchInsert(list, TimeUnit.SECONDS, 300);
         List result_two = redisUtil.batchGet(keyList);
         System.out.println(result_two);
+    }
+
+
+    public void transactionalTest() {
+        String userId = "user:12345";
+        String article = "article:12345";
+        redisTemplate.setEnableTransactionSupport(true);
+        redisTemplate.multi();
+        //跟新评分和投票记录,更新投票数
+        redisTemplate.opsForSet().add("voted", userId);
+        redisTemplate.opsForZSet().incrementScore("time", article, SCORE);
+        redisTemplate.opsForHash().increment(article, "vote", 1);
+        Map map = new HashMap();
+        map.put("title", "测试标题");
+        map.put("link", "www.test.com");
+        map.put("poster", userId);
+        map.put("time", System.currentTimeMillis());
+        //设置错误点
+//        redisUtil.hmset(article, null);
+        redisTemplate.opsForHash().putAll(article, map);
+        redisTemplate.exec();
+    }
+
+    public void transactionalTest2() {
+        String userId = "user:12345";
+        String article = "article:12345";
+        /*使用 SessionCallback, 在同一个 Redis Connection 中执行事务: 成功执行事务*/
+        SessionCallback<Object> callback = new SessionCallback<Object>() {
+            @Override
+            public Object execute(RedisOperations operations) throws DataAccessException {
+                operations.multi();
+                operations.opsForValue().set("name", "qinyi");
+                operations.opsForValue().set("gender", "male");
+                Map map = new HashMap();
+                map.put("title", "测试标题");
+                map.put("link", "www.test.com");
+                map.put("poster", userId);
+                map.put("time", System.currentTimeMillis());
+                //错误，事务回滚
+//                operations.opsForHash().putAll(article, null);
+                operations.opsForHash().putAll(article, map);
+                return operations.exec();
+            }
+        };
+
+        // [true, true, true]
+        System.out.println(redisTemplate.execute(callback));
+
     }
 
 }
