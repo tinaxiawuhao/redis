@@ -45,4 +45,14 @@ public class RedisTestController {
         redisTestService.transactionalTest2();
     }
 
+    @GetMapping("/lockTest")
+    public void lockTest() {
+        redisTestService.lockTest();
+    }
+
+    @GetMapping("/redissonLockTest")
+    public void redissonLockTest() {
+        redisTestService.redissonLockTest();
+    }
+
 }

@@ -22,3 +22,11 @@ GET http://localhost:8088/transactionalTest
 #事务测试
 GET http://localhost:8088/transactionalTest2
 ###
+
+#分布式锁
+GET http://localhost:8088/lockTest
+###
+
+#分布式锁
+GET http://localhost:8088/redissonLockTest
+###

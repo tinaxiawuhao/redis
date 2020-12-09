@@ -1,7 +1,10 @@
 package com.example.redisstudy.service.impl;
 
+import com.example.redisstudy.template.RedisLock;
 import com.example.redisstudy.template.RedisUtil;
+import com.example.redisstudy.template.RedissonLock;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
@@ -22,6 +25,12 @@ import java.util.concurrent.TimeUnit;
 public class RedisTestServiceImpl {
     @Autowired
     private RedisUtil redisUtil;
+
+    @Autowired
+    private RedisLock redisLock;
+
+    @Autowired
+    private RedissonLock redissonLock;
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -160,6 +169,36 @@ public class RedisTestServiceImpl {
         // [true, true, true]
         System.out.println(redisTemplate.execute(callback));
 
+    }
+
+    public void lockTest(){
+        String token = null;
+        try{
+            token = redisLock.lock("lock_name", 10000, 11000);
+            if(token != null) {
+                System.out.println("我拿到了锁哦");
+                // 执行业务代码
+            } else {
+                System.out.println("我没有拿到锁唉");
+            }
+        } finally {
+            if(token!=null) {
+                redisLock.unlock("lock_name", token);
+                System.out.println("放开锁");
+            }
+        }
+    }
+
+    public void redissonLockTest(){
+        RLock lock = redissonLock.lock();
+        try{
+            lock.lock();
+            System.out.println("我拿到了锁哦");
+            // 执行业务代码
+        }finally{
+            lock.unlock();
+            System.out.println("放开锁");
+        }
     }
 
 }
